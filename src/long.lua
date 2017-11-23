@@ -1,3 +1,4 @@
+local bit32 = require 'bit32'
 local class = require 'middleclass'
 
 local Long = class('Long')
@@ -67,5 +68,72 @@ end
  * @returns {boolean}
 --]]
 function Long:isLong() return isLong(self) end
+
+--[[
+ * @param {number} lowBits
+ * @param {number} highBits
+ * @param {boolean=} unsigned
+ * @returns {!Long}
+ * @inner
+--]]
+local function fromBits(lowBits, highBits, unsigned)
+  return Long:new(lowBits, highBits, unsigned)
+end
+
+--[[
+ * Returns a Long representing the 64 bit integer that comes by concatenating the given low and high bits. Each is
+ *  assumed to use 32 bits.
+ * @function
+ * @param {number} lowBits The low 32 bits
+ * @param {number} highBits The high 32 bits
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to `false` for signed
+ * @returns {!Long} The corresponding Long value
+--]]
+Long.fromBits = fromBits
+
+--[[
+ * Converts this Long to its byte representation.
+ * @param {boolean=} le Whether little or big endian, defaults to big endian
+ * @returns {!Array.<number>} Byte representation
+--]]
+function Long:toBytes(le)
+  if le then return self:toBytesLE() else return self:toBytesBE() end
+end
+
+--[[
+ * Converts this Long to its little endian byte representation.
+ * @returns {!Array.<number>} Little endian byte representation
+--]]
+function Long:toBytesLE()
+  local hi, lo = self.high, self.low
+  return {
+    bit32.band(lo                  , 0xff),
+    bit32.band(bit32.rshift(lo,  8), 0xff),
+    bit32.band(bit32.rshift(lo, 16), 0xff),
+    bit32.band(bit32.rshift(lo, 24), 0xff),
+    bit32.band(hi                  , 0xff),
+    bit32.band(bit32.rshift(hi, 8) , 0xff),
+    bit32.band(bit32.rshift(hi, 16), 0xff),
+    bit32.band(bit32.rshift(hi, 24), 0xff)
+  }
+end
+
+--[[
+ * Converts this Long to its big endian byte representation.
+ * @returns {!Array.<number>} Big endian byte representation
+--]]
+function Long:toBytesBE()
+  local hi, lo = self.high, self.low
+  return {
+    bit32.band(bit32.rshift(hi, 24), 0xff),
+    bit32.band(bit32.rshift(hi, 16), 0xff),
+    bit32.band(bit32.rshift(hi,  8), 0xff),
+    bit32.band(hi                  , 0xff),
+    bit32.band(bit32.rshift(lo, 24), 0xff),
+    bit32.band(bit32.rshift(lo, 16), 0xff),
+    bit32.band(bit32.rshift(lo,  8), 0xff),
+    bit32.band(lo                  , 0xff)
+  }
+end
 
 return Long
