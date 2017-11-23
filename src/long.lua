@@ -90,6 +90,8 @@ end
  * @returns {!Long} The corresponding Long value
 --]]
 Long.fromBits = fromBits
+
+--[[
  * Converts this Long to its byte representation.
  * @param {boolean=} le Whether little or big endian, defaults to big endian
  * @returns {!Array.<number>} Byte representation
