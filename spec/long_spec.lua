@@ -26,3 +26,8 @@ it('basic', function()
 --    assert.equal(longVal2:toString(), "9223372036854775807")
 --    assert.equal(longVal2.unsigned, longVal.unsigned)
 end)
+
+it('isLong', function()
+  local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
+  assert.equal(Long.isLong(longVal), true)
+end)
