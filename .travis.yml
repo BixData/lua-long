@@ -1,0 +1,26 @@
+language: python
+sudo: false
+
+env:
+  - LUA="lua=5.1"
+  - LUA="lua=5.2"
+  - LUA="lua=5.3"
+  - LUA="luajit=2.0"
+  - LUA="luajit=2.1"
+
+before_install:
+  - pip install hererocks
+  - hererocks lua_install -r^ --$LUA
+  - export PATH=$PATH:$PWD/lua_install/bin
+
+install:
+  - if [[ "$LUA" == "lua=5.1"    ]]; then luarocks install bit32; fi
+  - if [[ "$LUA" == "luajit=2.0" ]]; then luarocks install bit32; fi
+  - if [[ "$LUA" == "luajit=2.1" ]]; then luarocks install bit32; fi
+  - luarocks install busted
+  - luarocks install luacheck
+  - luarocks install middleclass
+
+script:
+  - luacheck --std max+busted --codes src spec --no-self --ignore 213 311 611 631
+  - busted --verbose --no-auto-insulate
