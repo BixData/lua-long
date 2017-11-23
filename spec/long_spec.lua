@@ -31,3 +31,15 @@ it('isLong', function()
   local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
   assert.equal(Long.isLong(longVal), true)
 end)
+
+it('toBytes', function()
+  local longVal = Long.fromBits(0x01234567, 0x12345678)
+  assert.same(longVal:toBytesBE(), {
+      0x12, 0x34, 0x56, 0x78,
+      0x01, 0x23, 0x45, 0x67
+  })
+  assert.same(longVal:toBytesLE(), {
+      0x67, 0x45, 0x23, 0x01,
+      0x78, 0x56, 0x34, 0x12
+  })
+end)
