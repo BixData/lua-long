@@ -33,7 +33,6 @@ $ luarocks install long
 
 Usage
 -----
-The class is compatible with CommonJS and AMD loaders and is exposed globally as `dcodeIO.Long` if neither is available.
 
 ```lua
 local Long = require('long')

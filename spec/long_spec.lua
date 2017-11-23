@@ -43,3 +43,31 @@ it('toBytes', function()
       0x78, 0x56, 0x34, 0x12
   })
 end)
+
+describe('unsigned', function()
+
+--  it('min/max', function()
+--    assert.equal("-9223372036854775808", Long.MIN_VALUE.toString())
+--    assert.equal("9223372036854775807", Long.MAX_VALUE.toString())
+--    assert.equal("18446744073709551615", Long.MAX_UNSIGNED_VALUE.toString())
+--  end)
+
+  it('construct_negint', function()
+    local longVal = Long.fromInt(-1, true)
+    assert.equal(-1, longVal.low)
+    assert.equal(-1, longVal.high)
+    assert.equal(true, longVal.unsigned)
+    --assert.equal(18446744073709551615, longVal.toNumber())
+    --assert.equal("18446744073709551615", longVal.toString())
+  end)
+
+  it('construct_highlow', function()
+    local longVal = Long:new(0xFFFFFFFF, 0xFFFFFFFF, true)
+    assert.equal(-1, longVal.low)
+    assert.equal(-1, longVal.high)
+    assert.equal(true, longVal.unsigned)
+    --assert.equal(18446744073709551615, longVal:toNumber())
+    --assert.equal("18446744073709551615", longVal.toString())
+  end)
+
+end)
