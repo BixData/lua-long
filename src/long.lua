@@ -339,6 +339,7 @@ end
  * @returns {boolean}
 --]]
 Long.eq = Long.equals
+Long.__eq = Long.equals
 
 --[[
  * Tests if this Long's value is greater than the specified's.
