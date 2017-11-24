@@ -380,6 +380,14 @@ end
 Long.gte = Long.greaterThanOrEqual
 
 --[[
+ * Tests if this Long's value is even.
+ * @returns {boolean}
+--]]
+function Long:isEven()
+  return bit32.band(self.low, 1) == 0
+end
+
+--[[
  * Tests if the specified object is a Long.
  * @function
  * @param {*} obj Object
@@ -395,6 +403,14 @@ end
 --]]
 function Long:isNegative()
   return not self.unsigned and self.high < 0
+end
+
+--[[
+ * Tests if this Long's value is odd.
+ * @returns {boolean}
+--]]
+function Long:isOdd()
+  return bit32.band(self.low, 1) == 1
 end
 
 --[[
