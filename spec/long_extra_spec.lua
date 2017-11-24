@@ -34,6 +34,24 @@ it('consts', function()
   assert.equal(-2147483648, Long.MIN_VALUE.high)
 end)
 
+it('divide', function()
+  assert.has_error(function() Long.ONE:divide(0) end)
+  assert.has_error(function() Long.ONE:divide(Long.ZERO) end)
+  
+  assert.equal(0, Long.fromInt(0):divide(1):toInt())
+  assert.equal(1, Long.fromInt(1):divide(1):toInt())
+  
+  assert.equal(0, Long.fromInt(1):divide(2):toInt())
+  assert.equal(1, Long.fromInt(2):divide(2):toInt())
+  assert.equal(2, Long.fromInt(4):divide(2):toInt())
+  assert.equal(4, Long.fromInt(8):divide(2):toInt())
+  
+  local halfOfMax = Long.MAX_VALUE:divide(2)
+  assert.equal(-1, halfOfMax.low)
+  assert.equal(1073741823, halfOfMax.high)
+  
+end)
+
 it('equal', function()
   assert.is_true(Long.ZERO:eq(Long.ZERO))
   assert.is_true(Long.NEG_ONE:eq(Long.NEG_ONE))

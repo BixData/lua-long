@@ -58,7 +58,6 @@ end
 function Long.fromInt(value, unsigned)
   local obj --, cachedObj, cache
   if unsigned then
---      value >>>= 0
     value = bit32s.rshift(value, 0)
 --      if (cache = (0 <= value && value < 256)) {
 --          cachedObj = UINT_CACHE[value]
@@ -150,6 +149,15 @@ local TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2
  * @inner
 --]]
 local TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
+
+--[[
+ * @function
+ * @param {number} base
+ * @param {number} exponent
+ * @returns {number}
+ * @inner
+--]]
+local pow_dbl = math.pow -- Used 4 times (4*8 to 15+4)
 
 --[[
  * Signed zero.
@@ -304,7 +312,6 @@ function Long:compare(other)
     if self:sub(other):isNegative() then return -1 else return 1 end
   end
   -- Both are positive if at least one is unsigned
-  --return (other.high >>> 0) > (self.high >>> 0) || (other.high === self.high && (other.low >>> 0) > (self.low >>> 0)) ? -1 : 1
   if bit32.rshift(other.high, 0) > bit32.rshift(self.high, 0) or (other.high == self.high and bit32.rshift(other.low, 0) > bit32.rshift(self.low, 0)) then
     return -1
   else
@@ -320,6 +327,119 @@ end
  *  if the given one is greater
 --]]
 Long.comp = Long.compare
+
+--[[
+ * Returns this Long divided by the specified. The result is signed if this Long is signed or
+ *  unsigned if this Long is unsigned.
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Quotient
+--]]
+function Long:divide(divisor)
+  if not Long.isLong(divisor) then
+    divisor = Long.fromValue(divisor)
+  end
+  assert(not divisor:isZero(), 'division by zero')
+  if self:isZero() then
+    if self.unsigned then return Long.UZERO else return Long.ZERO end
+  end
+  local approx, rem, res
+  if not self.unsigned then
+    -- This section is only relevant for signed longs and is derived from the
+    -- closure library as a whole.
+    if self:eq(Long.MIN_VALUE) then
+      if divisor:eq(Long.ONE) or divisor:eq(Long.NEG_ONE) then
+        return Long.MIN_VALUE  -- recall that -MIN_VALUE == MIN_VALUE
+      elseif divisor:eq(Long.MIN_VALUE) then
+        return Long.ONE
+      else
+        -- At this point, we have |other| >= 2, so |this/other| < |MIN_VALUE|.
+        local halfSelf = self:shr(1)
+        approx = halfSelf:div(divisor):shl(1)
+        if approx:eq(Long.ZERO) then
+          if divisor:isNegative() then return Long.ONE else return Long.NEG_ONE end
+        else
+          rem = self:sub(divisor:mul(approx))
+          res = approx:add(rem:div(divisor))
+          return res
+        end
+      end
+    elseif divisor:eq(Long.MIN_VALUE) then
+      if self.unsigned then return Long.UZERO else return Long.ZERO end
+    end
+    if self:isNegative() then
+      if divisor:isNegative() then
+        return self:neg():div(divisor:neg())
+      end
+      return self:neg():div(divisor):neg()
+    elseif divisor:isNegative() then
+      return self:div(divisor:neg()):neg()
+    end
+    res = Long.ZERO
+  else
+    -- The algorithm below has not been made for unsigned longs. It's therefore
+    -- required to take special care of the MSB prior to running it.
+    if not divisor.unsigned then
+      divisor = divisor:toUnsigned()
+    end
+    if divisor:gt(self) then
+      return Long.UZERO
+    end
+    if divisor:gt(self:shru(1)) then -- 15 >>> 1 = 7  with divisor = 8  true
+      return Long.UONE
+    end
+    res = Long.UZERO
+  end
+
+  -- Repeat the following until the remainder is less than other:  find a
+  -- floating-point that approximates remainder / other *from below*, add this
+  -- into the result, and subtract it from the remainder.  It is critical that
+  -- the approximate value is less than or equal to the real value so that the
+  -- remainder never becomes negative.
+  rem = self
+  while rem:gte(divisor) do
+    -- Approximate the result of division. This may be a little greater or
+    -- smaller than the actual value.
+    approx = math.max(1, math.floor(rem:toNumber() / divisor:toNumber()))
+
+    -- We will tweak the approximate result by changing it in the 48-th digit or
+    -- the smallest non-fractional digit, whichever is larger.
+    local log2 = math.ceil(math.log(approx) / math.log(2))
+    local delta
+    if log2 <= 48 then
+      delta = 1
+    else
+      delta = pow_dbl(2, log2 - 48)
+    end
+
+    -- Decrease the approximation until it is smaller than the remainder.  Note
+    -- that if it is too large, the product overflows and is negative.
+    local approxRes = Long.fromNumber(approx)
+    local approxRem = approxRes:mul(divisor)
+    while approxRem:isNegative() or approxRem:gt(rem) do
+      approx = approx - delta
+      approxRes = Long.fromNumber(approx, self.unsigned)
+      approxRem = approxRes:mul(divisor)
+    end
+    
+    -- We know the answer can't be zero... and actually, zero would cause
+    -- infinite recursion since we would make no progress.
+    if approxRes:isZero() then
+      approxRes = Long.ONE
+    end
+    
+    res = res:add(approxRes)
+    rem = rem:sub(approxRem)
+  end
+  return res
+end
+
+--[[
+ * Returns this Long divided by the specified. This is an alias of {@link Long#divide}.
+ * @function
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Quotient
+--]]
+Long.div = Long.divide
 
 --[[
  * Tests if this Long's value equals the specified's.
