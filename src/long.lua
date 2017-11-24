@@ -337,6 +337,18 @@ end
 --]]
 Long.neg = Long.negate
 
+----[[
+-- * Returns the difference of this and the specified Long.
+-- * @param {!Long|number|string} subtrahend Subtrahend
+-- * @returns {!Long} Difference
+----]]
+function Long:subtract(subtrahend)
+  if not Long.isLong(subtrahend) then
+    subtrahend = Long.fromValue(subtrahend)
+  end
+  return self:add(subtrahend:neg())
+end
+
 --[[
  * Converts this Long to its byte representation.
  * @param {boolean=} le Whether little or big endian, defaults to big endian
