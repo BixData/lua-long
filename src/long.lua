@@ -440,6 +440,7 @@ end
  * @returns {!Long} Quotient
 --]]
 Long.div = Long.divide
+Long.__div = Long.divide
 
 --[[
  * Tests if this Long's value equals the specified's.
@@ -557,6 +558,44 @@ end
  * @returns {boolean}
 --]]
 Long.lt = Long.lessThan
+Long.__lt = Long.lessThan
+
+--[[
+ * Tests if this Long's value is less than or equal the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+function Long:lessThanOrEqual(other)
+  return self:comp(other) <= 0
+end
+
+--[[
+ * Tests if this Long's value is less than or equal the specified's. This is an alias of {@link Long#lessThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+Long.lte = Long.lessThanOrEqual
+Long.__le = Long.lessThanOrEqual
+
+--[[
+ * Returns this Long modulo the specified.
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Remainder
+--]]
+function Long:modulo(divisor)
+  if not Long.isLong(divisor) then divisor = Long.fromValue(divisor) end
+  return self:sub(self:div(divisor):mul(divisor))
+end
+
+--[[
+ * Returns this Long modulo the specified. This is an alias of {@link Long#modulo}.
+ * @function
+ * @param {!Long|number|string} divisor Divisor
+ * @returns {!Long} Remainder
+--]]
+Long.mod = Long.modulo
+Long.__mod = Long.modulu
 
 --[[
  * Returns the product of this and the specified Long.
@@ -637,6 +676,7 @@ end
  * @returns {!Long} Product
 --]]
 Long.mul = Long.multiply
+Long.__mul = Long.multiply
 
 --[[
  * Negates this Long's value.
@@ -771,6 +811,7 @@ end
  * @returns {!Long} Difference
 --]]
 Long.sub = Long.subtract
+Long.__sub = Long.subtract
 
 --[[
  * Converts this Long to its byte representation.
@@ -788,11 +829,11 @@ end
 function Long:toBytesLE()
   local hi, lo = self.high, self.low
   return {
-    bit32s.band(lo                  , 0xff),
+    bit32s.band(lo                   , 0xff),
     bit32s.band(bit32s.rshift(lo,  8), 0xff),
     bit32s.band(bit32s.rshift(lo, 16), 0xff),
     bit32s.band(bit32s.rshift(lo, 24), 0xff),
-    bit32s.band(hi                  , 0xff),
+    bit32s.band(hi                   , 0xff),
     bit32s.band(bit32s.rshift(hi, 8) , 0xff),
     bit32s.band(bit32s.rshift(hi, 16), 0xff),
     bit32s.band(bit32s.rshift(hi, 24), 0xff)
@@ -809,11 +850,11 @@ function Long:toBytesBE()
     bit32s.band(bit32s.rshift(hi, 24), 0xff),
     bit32s.band(bit32s.rshift(hi, 16), 0xff),
     bit32s.band(bit32s.rshift(hi,  8), 0xff),
-    bit32s.band(hi                  , 0xff),
+    bit32s.band(hi                   , 0xff),
     bit32s.band(bit32s.rshift(lo, 24), 0xff),
     bit32s.band(bit32s.rshift(lo, 16), 0xff),
     bit32s.band(bit32s.rshift(lo,  8), 0xff),
-    bit32s.band(lo                  , 0xff)
+    bit32s.band(lo                   , 0xff)
   }
 end
 

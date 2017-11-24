@@ -49,7 +49,10 @@ it('divide', function()
   local halfOfMax = Long.MAX_VALUE:divide(2)
   assert.equal(-1, halfOfMax.low)
   assert.equal(1073741823, halfOfMax.high)
-  
+end)
+
+it('__div', function()
+  assert.equal(Long.fromInt(7), Long.fromInt(21) / Long.fromInt(3))
 end)
 
 it('equal', function()
@@ -136,6 +139,22 @@ it('lessThan', function()
   assert.is_false(Long.NEG_ONE:lt(Long.NEG_ONE))
 end)
 
+it('__lt', function()
+  assert.is_true(Long.ZERO < Long.ONE)
+  assert.is_false(Long.ONE < Long.ZERO)
+end)
+
+it('__le', function()
+  assert.is_true(Long.ZERO <= Long.ONE)
+  assert.is_true(Long.ONE <= Long.ONE)
+  assert.is_false(Long.ONE <= Long.ZERO)
+end)
+
+it('__mod', function()
+  pending('__mod not yet supported')
+  assert.equal(Long.fromInt(2), Long.fromInt(17) % Long.fromInt(3))
+end)
+
 it('multiply', function()
   assert.equal(0, Long.fromInt(0):multiply(0):toInt())
   assert.equal(0, Long.fromInt(0):multiply(1):toInt())
@@ -158,6 +177,10 @@ it('multiply', function()
   
   assert.equal(-4, Long.fromInt(2):multiply(Long.fromBits(-2, 10)).low)
   assert.equal(21, Long.fromInt(2):multiply(Long.fromBits(-2, 10)).high)
+end)
+
+it('__mul', function()
+  assert.equal(Long.fromInt(21), Long.fromInt(7) * Long.fromInt(3))
 end)
 
 it('shiftLeft', function()
@@ -197,6 +220,11 @@ it('shiftRight', function()
   assert.equal(-1, Long.fromInt(-2):shiftRight(1):toInt())
   assert.equal(-2, Long.fromInt(-3):shiftRight(1):toInt())
   assert.equal(-2, Long.fromInt(-4):shiftRight(1):toInt())
+end)
+
+it('__sub', function()
+  assert.equal(3, Long.fromInt(5):sub(2):toInt())
+  assert.equal(Long.fromInt(3), Long.fromInt(5) - Long.fromInt(2))
 end)
 
 it('toInt', function()
