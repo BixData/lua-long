@@ -244,6 +244,77 @@ function Long.fromNumber(value, unsigned)
 end
 
 --[[
+ * Returns the sum of this and the specified Long.
+ * @param {!Long|number|string} addend Addend
+ * @returns {!Long} Sum
+--]]
+function Long:add(addend)
+  if not Long.isLong(addend) then
+    addend = Long.fromValue(addend)
+  end
+
+  -- Divide each number into 4 chunks of 16 bits, and then sum the chunks.
+
+  local a48 = bit32.rshift(self.high, 16)
+  local a32 = bit32.band(self.high, 0xFFFF)
+  local a16 = bit32.rshift(self.low, 16)
+  local a00 = bit32.band(self.low, 0xFFFF)
+
+  local b48 = bit32.rshift(addend.high, 16)
+  local b32 = bit32.band(addend.high, 0xFFFF)
+  local b16 = bit32.rshift(addend.low, 16)
+  local b00 = bit32.band(addend.low, 0xFFFF)
+
+  local c48, c32, c16, c00 = 0, 0, 0, 0
+  c00 = c00 + a00 + b00
+  c16 = c16 + bit32.rshift(c00, 16)
+  c00 = bit32.band(c00, 0xFFFF)
+  c16 = c16 + a16 + b16
+  c32 = c32 + bit32.rshift(c16, 16)
+  c16 = bit32.band(c16, 0xFFFF)
+  c32 = c32 + a32 + b32
+  c48 = c48 + bit32.rshift(c32, 16)
+  c32 = bit32.band(c32, 0xFFFF)
+  c48 = c48 + a48 + b48
+  c48 = bit32.band(c48, 0xFFFF)
+  --return Long.fromBits((c16 << 16) | c00, (c48 << 16) | c32, self.unsigned)
+  return Long.fromBits(bit32.bor(bit32.lshift(c16,16), c00), bit32.bor(bit32.lshift(c48, 16), c32), self.unsigned)
+end
+
+--[[
+ * Returns the bitwise NOT of this Long.
+ * @returns {!Long}
+--]]
+function Long:bnot()
+  --return Long.fromBits(~self.low, ~self.high, self.unsigned)
+  return Long.fromBits(bit32.bnot(self.low), bit32.bnot(self.high), self.unsigned)
+end
+
+--[[
+ * Tests if this Long's value equals the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+function Long:equals(other)
+  if not Long.isLong(other) then
+    other = Long.fromValue(other)
+  end
+  -- t(self.high >>> 31) == 1 and (other.high >>> 31) == 1
+  if self.unsigned ~= other.unsigned and bit32.rshift(self.high, 31) == 1 and bit32.rshift(other.high, 31) == 1 then
+    return false
+  end
+  return self.high == other.high and self.low == other.low
+end
+
+--[[
+ * Tests if this Long's value equals the specified's. This is an alias of {@link Long#equals}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+Long.eq = Long.equals
+
+--[[
  * Tests if the specified object is a Long.
  * @function
  * @param {*} obj Object
@@ -252,6 +323,25 @@ end
 function Long:isLong()
   return self and self.isInstanceOf and self:isInstanceOf(Long)
 end
+
+--[[
+ * Negates this Long's value.
+ * @function
+ * @returns {!Long} Negated Long
+--]]
+function Long:negate()
+  if not self.unsigned and self:eq(Long.MIN_VALUE) then
+    return Long.MIN_VALUE
+  end
+  return self:bnot():add(Long.ONE)
+end
+
+--[[
+ * Negates this Long's value. This is an alias of {@link Long#negate}.
+ * @function
+ * @returns {!Long} Negated Long
+--]]
+Long.neg = Long.negate
 
 --[[
  * Converts this Long to its byte representation.
@@ -309,6 +399,24 @@ function Long:toNumber()
   end
   --return self.high * TWO_PWR_32_DBL + (self.low >>> 0)
   return self.high * TWO_PWR_32_DBL + bit32.rshift(self.low, 0)
+end
+
+--[[
+ * Converts this Long to signed.
+ * @returns {!Long} Signed long
+--]]
+function Long:toSigned()
+  if not self.unsigned then return self end
+  return Long.fromBits(self.low, self.high, false)
+end
+
+--[[
+ * Converts this Long to unsigned.
+ * @returns {!Long} Unsigned long
+--]]
+function Long:toUnsigned()
+  if self.unsigned then return self end
+  return Long.fromBits(self.low, self.high, true)
 end
 
 return Long
