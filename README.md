@@ -4,8 +4,7 @@ Lua Long
 A Long class for representing a 64 bit two's-complement integer value derived from [long.js](https://github.com/dcodeIO/long.js), which was derived from the [Closure Library](https://github.com/google/closure-library)
 for stand-alone use and extended with unsigned support.
 
-[![Build Status](https://travis-ci.org/dcodeIO/long.js.svg)](https://travis-ci.org/dcodeIO/long.js)
-[![Donate](https://raw.githubusercontent.com/dcodeIO/long.js/master/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=dcode%40dcode.io&item_name=%3C3%20long.js)
+[![Build Status](https://travis-ci.org/BixData/lua-long.svg)](https://travis-ci.org/BixData/lua-long)
 
 Background
 ----------
@@ -58,7 +57,7 @@ See the from* functions below for more convenient ways of constructing Longs.
 
 ---
 
-#### Long.MAX_UNSIGNED_VALUE
+#### Long.MAX\_UNSIGNED\_VALUE
 
 Maximum unsigned value.
 
@@ -245,7 +244,7 @@ Returns this Long divided by the specified.
 | divisor         | *!Long &#124; number &#124; string* | Divisor 
 | **@returns**    | *!Long*         | Quotient 
 
-#### Long:equals/eq(other)
+#### Long:equals/eq/__eq(other)
 
 Tests if this Long's value equals the specified's.
 
@@ -508,7 +507,3 @@ Returns the bitwise XOR of this Long and the given one.
 |-----------------|-----------------|---------------
 | other           | *!Long &#124; number &#124; string* | Other Long 
 | **@returns**    | *!Long*         | 
-
-License
--------
-Apache License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.html
