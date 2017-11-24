@@ -441,11 +441,106 @@ end
 --]]
 Long.neg = Long.negate
 
-----[[
--- * Returns the difference of this and the specified Long.
--- * @param {!Long|number|string} subtrahend Subtrahend
--- * @returns {!Long} Difference
-----]]
+--[[
+ * Returns this Long with bits shifted to the left by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+function Long:shiftLeft(numBits)
+  if Long.isLong(numBits) then
+    numBits = numBits:toInt()
+  end
+  if bit32.band(numBits, 63) == 0 then
+    return self
+  elseif numBits < 32 then
+    local lowBits = bit32.lshift(self.low, numBits)
+    local highBits = bit32.bor(bit32.lshift(self.high, numBits), bit32.rshift(self.low, 32 - numBits))
+    return Long.fromBits(lowBits, highBits, self.unsigned)
+  else
+    return Long.fromBits(0, bit32.lshift(self.low, numBits - 32), self.unsigned)
+  end
+end
+
+--[[
+ * Returns this Long with bits shifted to the left by the given amount. This is an alias of {@link Long#shiftLeft}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+Long.shl = Long.shiftLeft
+
+--[[
+ * Returns this Long with bits arithmetically shifted to the right by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+function Long:shiftRight(numBits)
+  if Long.isLong(numBits) then
+    numBits = numBits:toInt()
+  end
+  if bit32.band(numBits, 63) == 0 then
+      return self
+  elseif numBits < 32 then
+    local lowBits = bit32.bor(bit32.rshift(self.low, numBits), bit32.lshift(self.high, 32 - numBits))
+    local highBits = bit32s.arshift(self.high, numBits)
+    return Long.fromBits(lowBits, highBits, self.unsigned)
+  else
+    local lowBits = bit32s.arshift(self.high, numBits - 32)
+    local highBits
+    if self.high >= 0 then highBits = 0 else highBits = -1 end
+    return Long.fromBits(lowBits, highBits, self.unsigned)
+  end
+end
+
+--[[
+ * Returns this Long with bits arithmetically shifted to the right by the given amount. This is an alias of {@link Long#shiftRight}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+Long.shr = Long.shiftRight
+
+--[[
+ * Returns this Long with bits logically shifted to the right by the given amount.
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+function Long:shiftRightUnsigned(numBits)
+  if Long.isLong(numBits) then
+    numBits = numBits:toInt()
+  end
+  numBits = bit32.band(numBits, 63)
+  if numBits == 0 then
+    return self
+  else
+    local high = self.high
+    if numBits < 32 then
+      local low = self.low
+      --return Long.fromBits((low >>> numBits) | (high << (32 - numBits)), high >>> numBits, self.unsigned)
+      local lowBits = bit32.bor(bit32.rshift(low, numBits), bit32.lshift(high, 32 - numBits))
+      local highBits = bit32.rshift(high, numBits)
+      return Long.fromBits(lowBits, highBits, self.unsigned)
+    elseif numBits == 32 then
+      return Long.fromBits(high, 0, self.unsigned)
+    else
+      return Long.fromBits(bit32.rshift(high, numBits - 32), 0, self.unsigned)
+    end
+  end
+end
+
+--[[
+ * Returns this Long with bits logically shifted to the right by the given amount. This is an alias of {@link Long#shiftRightUnsigned}.
+ * @function
+ * @param {number|!Long} numBits Number of bits
+ * @returns {!Long} Shifted Long
+--]]
+Long.shru = Long.shiftRightUnsigned
+
+--[[
+ * Returns the difference of this and the specified Long.
+ * @param {!Long|number|string} subtrahend Subtrahend
+ * @returns {!Long} Difference
+--]]
 function Long:subtract(subtrahend)
   if not Long.isLong(subtrahend) then
     subtrahend = Long.fromValue(subtrahend)
