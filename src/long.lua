@@ -121,7 +121,7 @@ local TWO_PWR_16_DBL = bit32s.lshift(1, 16)
  * @const
  * @inner
 --]]
---local TWO_PWR_24_DBL = bit32s.lshift(1, 24)
+local TWO_PWR_24_DBL = bit32s.lshift(1, 24)
 
 --[[
  * @type {number}
@@ -149,7 +149,7 @@ local TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2
  * @const
  * @inner
 --]]
---local TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
+local TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
 
 --[[
  * Signed zero.
@@ -437,6 +437,86 @@ end
  * @returns {boolean}
 --]]
 Long.lt = Long.lessThan
+
+--[[
+ * Returns the product of this and the specified Long.
+ * @param {!Long|number|string} multiplier Multiplier
+ * @returns {!Long} Product
+--]]
+function Long:multiply(multiplier)
+  if self:isZero() then return Long.ZERO end
+  if not Long.isLong(multiplier) then
+    multiplier = Long.fromValue(multiplier)
+  end
+  if multiplier:isZero() then return Long.ZERO end
+  if self:eq(Long.MIN_VALUE) then
+    if multiplier:isOdd() then return Long.MIN_VALUE else return Long.ZERO end
+  end
+  if multiplier:eq(Long.MIN_VALUE) then
+    if self:isOdd() then return Long.MIN_VALUE else return Long.ZERO end
+  end
+
+  if self:isNegative() then
+    if multiplier:isNegative() then
+      return self:neg():mul(multiplier:neg())
+    else
+      return self:neg():mul(multiplier):neg()
+    end
+  elseif multiplier:isNegative() then
+    return self:mul(multiplier:neg()):neg()
+  end
+
+  -- If both longs are small, use float multiplication
+  if self:lt(TWO_PWR_24) and multiplier:lt(TWO_PWR_24) then
+    return Long.fromNumber(self:toNumber() * multiplier:toNumber(), self.unsigned)
+  end
+
+  -- Divide each long into 4 chunks of 16 bits, and then add up 4x4 products.
+  -- We can skip products that would overflow.
+
+  local a48 = bit32.rshift(self.high, 16)
+  local a32 = bit32.band(self.high, 0xFFFF)
+  local a16 = bit32.rshift(self.low, 16)
+  local a00 = bit32.band(self.low, 0xFFFF)
+
+  local b48 = bit32.rshift(multiplier.high, 16)
+  local b32 = bit32.band(multiplier.high, 0xFFFF)
+  local b16 = bit32.rshift(multiplier.low, 16)
+  local b00 = bit32.band(multiplier.low, 0xFFFF)
+
+  local c48, c32, c16, c00 = 0, 0, 0, 0
+  c00 = c00 + a00 * b00
+  c16 = c16 + bit32.rshift(c00, 16)
+  c00 = bit32.band(c00, 0xFFFF)
+  c16 = c16 + a16 * b00
+  c32 = c32 + bit32.rshift(c16, 16)
+  c16 = bit32.band(c16, 0xFFFF)
+  c16 = c16 + a00 * b16
+  c32 = c32 + bit32.rshift(c16, 16)
+  c16 = bit32.band(c16, 0xFFFF)
+  c32 = c32 + a32 * b00
+  c48 = c48 + bit32.rshift(c32, 16)
+  c32 = bit32.band(c32, 0xFFFF)
+  c32 = c32 + a16 * b16
+  c48 = c48 + bit32.rshift(c32, 16)
+  c32 = bit32.band(c32, 0xFFFF)
+  c32 = c32 + a00 * b32
+  c48 = c48 + bit32.rshift(c32, 16)
+  c32 = bit32.band(c32, 0xFFFF)
+  c48 = c48 + a48 * b00 + a32 * b16 + a16 * b32 + a00 * b48
+  c48 = bit32.band(c48, 0xFFFF)
+  local lowBits = bit32.bor(bit32.lshift(c16, 16), c00)
+  local highBits = bit32.bor(bit32.lshift(c48, 16), c32)
+  return Long.fromBits(lowBits, highBits, self.unsigned)
+end
+
+--[[
+ * Returns the product of this and the specified Long. This is an alias of {@link Long#multiply}.
+ * @function
+ * @param {!Long|number|string} multiplier Multiplier
+ * @returns {!Long} Product
+--]]
+Long.mul = Long.multiply
 
 --[[
  * Negates this Long's value.
