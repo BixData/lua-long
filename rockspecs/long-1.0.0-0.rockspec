@@ -1,15 +1,15 @@
 package = "long"
 version = "1.0.0-0"
 source = {
-  url = "https://github.com/BixData/long/archive/1.0.0-0.tar.gz",
-  dir = "long-1.0.0-0"
+  url = "https://github.com/BixData/lua-long/archive/1.0.0-0.tar.gz",
+  dir = "lua-long-1.0.0-0"
 }
 description = {
   summary = "A pure Lua class representing a 64 bit two's-complement integer value",
   detailed = [[
     A pure Lua port of long.js, for representing a 64 bit two's-complement integer value
   ]],
-  homepage = "https://github.com/BixData/long",
+  homepage = "https://github.com/BixData/lua-long",
   maintainer = "David Rauschenbach",
   license = "Apache 2.0"
 }
