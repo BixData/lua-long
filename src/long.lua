@@ -95,6 +95,26 @@ function Long.fromInt(value, unsigned)
 end
 
 --[[
+ * @function
+ * @param {!Long|number|string|!{low: number, high: number, unsigned: boolean}} val
+ * @returns {!Long}
+ * @inner
+--]]
+function Long.fromValue(val)
+  if val and val.isInstanceOf and val:isInstanceOf(Long) then
+    return val
+  end
+  if type(val) == 'number' then
+    return Long.fromNumber(val)
+  end
+  if type(val) == 'string' then
+    return Long.fromString(val)
+  end
+  -- Throws for non-objects, converts non-instanceof Long:
+  return Long.fromBits(val.low, val.high, val.unsigned)
+end
+
+--[[
  * @type {number}
  * @const
  * @inner
