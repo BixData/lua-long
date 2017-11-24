@@ -34,6 +34,16 @@ it('consts', function()
   assert.equal(-2147483648, Long.MIN_VALUE.high)
 end)
 
+it('equal', function()
+  assert.is_true(Long.ZERO:eq(Long.ZERO))
+  assert.is_true(Long.NEG_ONE:eq(Long.NEG_ONE))
+  assert.is_true(Long.ONE:eq(Long.ONE))
+  assert.is_true(Long.MIN_VALUE:eq(Long.MIN_VALUE))
+  
+  assert.is_false(Long.ONE:eq(Long.ZERO))
+  assert.is_false(Long.ONE:eq(Long.NEG_ONE))
+end)
+
 it('greaterThan', function()
   assert.is_true(Long.ONE:gt(Long.ZERO))
   assert.is_true(Long.MAX_VALUE:gt(Long.ZERO))
@@ -48,30 +58,6 @@ it('greaterThan', function()
   assert.is_false(Long.ZERO:gt(Long.ZERO))
   assert.is_false(Long.ONE:gt(Long.ONE))
   assert.is_false(Long.NEG_ONE:gt(Long.NEG_ONE))
-end)
-
-it('lessThan', function()
-  assert.is_true(Long.ZERO:lt(Long.ONE))
-  assert.is_true(Long.ZERO:lt(Long.MAX_VALUE))
-  assert.is_true(Long.NEG_ONE:lt(Long.ZERO))
-  assert.is_true(Long.NEG_ONE:lt(Long.ONE))
-  assert.is_true(Long.MIN_VALUE:lt(Long.ZERO))
-  
-  assert.is_false(Long.ONE:lt(Long.ZERO))
-  
-  assert.is_false(Long.ZERO:lt(Long.ZERO))
-  assert.is_false(Long.ONE:lt(Long.ONE))
-  assert.is_false(Long.NEG_ONE:lt(Long.NEG_ONE))
-end)
-
-it('equal', function()
-  assert.is_true(Long.ZERO:eq(Long.ZERO))
-  assert.is_true(Long.NEG_ONE:eq(Long.NEG_ONE))
-  assert.is_true(Long.ONE:eq(Long.ONE))
-  assert.is_true(Long.MIN_VALUE:eq(Long.MIN_VALUE))
-  
-  assert.is_false(Long.ONE:eq(Long.ZERO))
-  assert.is_false(Long.ONE:eq(Long.NEG_ONE))
 end)
 
 it('isEven', function()
@@ -116,6 +102,44 @@ it('isZero', function()
   assert.is_false(Long.MIN_VALUE:isZero())
   assert.is_false(Long.MAX_VALUE:isZero())
   assert.is_false(Long.MAX_UNSIGNED_VALUE:isZero())
+end)
+
+it('lessThan', function()
+  assert.is_true(Long.ZERO:lt(Long.ONE))
+  assert.is_true(Long.ZERO:lt(Long.MAX_VALUE))
+  assert.is_true(Long.NEG_ONE:lt(Long.ZERO))
+  assert.is_true(Long.NEG_ONE:lt(Long.ONE))
+  assert.is_true(Long.MIN_VALUE:lt(Long.ZERO))
+  
+  assert.is_false(Long.ONE:lt(Long.ZERO))
+  
+  assert.is_false(Long.ZERO:lt(Long.ZERO))
+  assert.is_false(Long.ONE:lt(Long.ONE))
+  assert.is_false(Long.NEG_ONE:lt(Long.NEG_ONE))
+end)
+
+it('multiply', function()
+  assert.equal(0, Long.fromInt(0):multiply(0):toInt())
+  assert.equal(0, Long.fromInt(0):multiply(1):toInt())
+  assert.equal(0, Long.fromInt(1):multiply(0):toInt())
+  assert.equal(1, Long.fromInt(1):multiply(1):toInt())
+  assert.equal(2, Long.fromInt(1):multiply(2):toInt())
+  assert.equal(4, Long.fromInt(2):multiply(2):toInt())
+  
+  assert.equal(-4, Long.fromInt(2):multiply(-2):toInt())
+  assert.equal(-4, Long.fromInt(-2):multiply(2):toInt())
+  assert.equal(4, Long.fromInt(-2):multiply(-2):toInt())
+  
+  assert.equal(-2, Long.fromInt(0x7fffffff):multiply(2).low)
+  assert.equal(0, Long.fromInt(0x7fffffff):multiply(2).high)
+  
+  assert.equal(-4, Long.fromBits(-2, 10):multiply(2).low)
+  assert.equal(21, Long.fromBits(-2, 10):multiply(2).high)
+  
+  assert.equal(Long.MAX_VALUE, Long.MAX_VALUE:multiply(1))
+  
+  assert.equal(-4, Long.fromInt(2):multiply(Long.fromBits(-2, 10)).low)
+  assert.equal(21, Long.fromInt(2):multiply(Long.fromBits(-2, 10)).high)
 end)
 
 it('shiftLeft', function()
