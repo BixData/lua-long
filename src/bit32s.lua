@@ -10,8 +10,16 @@ local function signed(n)
   return n
 end
 
+function M.arshift(...)
+  return signed(bit32.arshift(...))
+end
+
 function M.band(...)
   return signed(bit32.band(...))
+end
+
+function M.bnot(...)
+  return signed(bit32.bnot(...))
 end
 
 function M.bor(...)

@@ -4,6 +4,37 @@ local class = require 'middleclass'
 local Long = class('Long')
 
 --[[
+ * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
+ *  See the from* functions below for more convenient ways of constructing Longs.
+ * @exports Long
+ * @class A Long class for representing a 64 bit two's-complement integer value.
+ * @param {number} low The low (signed) 32 bits of the long
+ * @param {number} high The high (signed) 32 bits of the long
+ * @param {boolean=} unsigned Whether unsigned or not, defaults to `false` for signed
+ * @constructor
+--]]
+function Long:initialize(low, high, unsigned)
+
+  --[[
+   * The low 32 bits as a signed value.
+   * @type {number}
+  --]]
+  self.low = bit32s.bor(low, 0)
+
+  --[[
+   * The high 32 bits as a signed value.
+   * @type {number}
+  --]]
+  self.high = bit32s.bor(high, 0)
+
+  --[[
+   * Whether unsigned or not.
+   * @type {boolean}
+  --]]
+  self.unsigned = not not unsigned
+end
+
+--[[
  * Returns a Long representing the 64 bit integer that comes by concatenating the given low and high bits. Each is
  *  assumed to use 32 bits.
  * @function
@@ -151,37 +182,6 @@ Long.MAX_UNSIGNED_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0x
  * @type {!Long}
 --]]
 Long.MIN_VALUE = Long.fromBits(0, bit32s.bor(0x80000000, 0), false)
-
---[[
- * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
- *  See the from* functions below for more convenient ways of constructing Longs.
- * @exports Long
- * @class A Long class for representing a 64 bit two's-complement integer value.
- * @param {number} low The low (signed) 32 bits of the long
- * @param {number} high The high (signed) 32 bits of the long
- * @param {boolean=} unsigned Whether unsigned or not, defaults to `false` for signed
- * @constructor
---]]
-function Long:initialize(low, high, unsigned)
-
-  --[[
-   * The low 32 bits as a signed value.
-   * @type {number}
-  --]]
-  self.low = bit32s.bor(low, 0)
-
-  --[[
-   * The high 32 bits as a signed value.
-   * @type {number}
-  --]]
-  self.high = bit32s.bor(high, 0)
-
-  --[[
-   * Whether unsigned or not.
-   * @type {boolean}
-  --]]
-  self.unsigned = not not unsigned
-end
 
 -- The internal representation of a long is the two given signed, 32-bit values.
 -- We use 32-bit pieces because these are the size of integers on which
