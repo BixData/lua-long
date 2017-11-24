@@ -1,4 +1,4 @@
-local bit32s = require 'bit32s'
+local bit32s = require 'long.bit32s'
 
 it('arshift: arithmetic right shift (JavaScript >> operator)', function()
   assert.equal(-1, bit32s.arshift(0xffffffff, 0))
