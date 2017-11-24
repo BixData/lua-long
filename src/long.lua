@@ -879,7 +879,15 @@ function Long:toString(radix)
   while true do
     local remDiv = rem:div(radixToPower)
     local intval = bit32.rshift(rem:sub(remDiv:mul(radixToPower)):toInt(), 0)
-    local digits = tostring(intval, radix)
+    local digits
+    if radix == 10 then
+      digits = tostring(intval)
+    elseif radix == 16 then
+      assert(not self.unsigned, 'toString(radix=16) for unsigned number not supported yet')
+      digits = string.format('%x', intval)
+    else
+      error('unsupported radix: ' .. tostring(radix))
+    end
     rem = remDiv
     if rem:isZero() then
       return digits .. result
