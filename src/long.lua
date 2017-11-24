@@ -846,6 +846,61 @@ function Long:toSigned()
 end
 
 --[[
+ * Converts the Long to a string written in the specified radix.
+ * @param {number=} radix Radix (2-36), defaults to 10
+ * @returns {string}
+ * @override
+ * @throws {RangeError} If `radix` is out of range
+--]]
+function Long:toString(radix)
+  radix = radix or 10
+  if radix < 2 or 36 < radix then
+    error('radix')
+  end
+  if self:isZero() then return '0' end
+  if self:isNegative() then -- Unsigned Longs are never negative
+    if self:eq(Long.MIN_VALUE) then
+      -- We need to change the Long value before it can be negated, so we remove
+      -- the bottom-most digit in this base and then recurse to do the rest.
+      local radixLong = Long.fromNumber(radix)
+      local div = self:div(radixLong)
+      local rem1 = div:mul(radixLong):sub(self)
+      return div:toString(radix) .. rem1:toInt():toString(radix)
+    else
+      return '-' .. self:neg():toString(radix)
+    end
+  end
+
+  -- Do several (6) digits each time through the loop, so as to
+  -- minimize the calls to the very expensive emulated div.
+  local radixToPower = Long.fromNumber(pow_dbl(radix, 6), self.unsigned)
+  local rem = self
+  local result = ''
+  while true do
+    local remDiv = rem:div(radixToPower)
+    local intval = bit32.rshift(rem:sub(remDiv:mul(radixToPower)):toInt(), 0)
+    local digits
+    if radix == 10 then
+      digits = tostring(intval)
+    elseif radix == 16 then
+      assert(not self.unsigned, 'toString(radix=16) for unsigned number not supported yet')
+      digits = string.format('%x', intval)
+    else
+      error('unsupported radix: ' .. tostring(radix))
+    end
+    rem = remDiv
+    if rem:isZero() then
+      return digits .. result
+    else
+      while #digits < 6 do
+        digits = '0' .. digits
+      end
+      result = digits .. result
+    end
+  end
+end
+
+--[[
  * Converts this Long to unsigned.
  * @returns {!Long} Unsigned long
 --]]
