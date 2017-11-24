@@ -1,3 +1,4 @@
+local bit32 = require 'bit32'
 local bit32s = require 'bit32s'
 local class = require 'middleclass'
 
@@ -284,10 +285,10 @@ end
 function Long:toNumber()
   if self.unsigned then
     --return ((self.high >>> 0) * TWO_PWR_32_DBL) + (self.low >>> 0)
-    return (bit32s.rshift(self.high, 0) * TWO_PWR_32_DBL) + bit32s.rshift(self.low, 0)
+    return (bit32.rshift(self.high, 0) * TWO_PWR_32_DBL) + bit32.rshift(self.low, 0)
   end
   --return self.high * TWO_PWR_32_DBL + (self.low >>> 0)
-  return self.high * TWO_PWR_32_DBL + bit32s.rshift(self.low, 0)
+  return self.high * TWO_PWR_32_DBL + bit32.rshift(self.low, 0)
 end
 
 return Long
