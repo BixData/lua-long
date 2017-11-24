@@ -238,6 +238,10 @@ function Long.fromNumber(value, unsigned)
   return Long.fromBits((value % TWO_PWR_32_DBL) or 0, (value / TWO_PWR_32_DBL) or 0, unsigned)
 end
 
+function Long:__tostring()
+  return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
+end
+
 --[[
  * Returns the sum of this and the specified Long.
  * @param {!Long|number|string} addend Addend
@@ -500,6 +504,14 @@ function Long:toBytesBE()
     bit32s.band(bit32s.rshift(lo,  8), 0xff),
     bit32s.band(lo                  , 0xff)
   }
+end
+
+--[[
+ * Converts the Long to a 32 bit integer, assuming it is a 32 bit integer.
+ * @returns {number}
+--]]
+function Long:toInt()
+  if self.unsigned then return bit32.rshift(self.low, 0) else return self.low end
 end
 
 --[[
