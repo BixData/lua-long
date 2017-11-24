@@ -1,5 +1,5 @@
 local bit32 = require 'bit32'
-local bit32s = require 'bit32s'
+local bit32s = require 'long.bit32s'
 local class = require 'middleclass'
 
 local Long = class('Long')
