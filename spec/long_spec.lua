@@ -96,7 +96,7 @@ describe('unsigned', function()
 
   it('max_sub_max', function()
     local longVal = Long.MAX_UNSIGNED_VALUE:subtract(Long.MAX_UNSIGNED_VALUE)
-    --assert.equal(0, longVal)
+    assert.equal(Long.ZERO, longVal)
     assert.equal(0, longVal.low)
     assert.equal(0, longVal.high)
     assert.equal(true, longVal.unsigned)
