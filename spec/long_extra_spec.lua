@@ -96,6 +96,45 @@ it('isZero', function()
   assert.is_false(Long.MAX_UNSIGNED_VALUE:isZero())
 end)
 
+it('shiftLeft', function()
+  assert.equal(0, Long.fromInt(0):shiftLeft(1):toInt())
+  
+  assert.equal(2, Long.fromInt(1):shiftLeft(1):toInt())
+  assert.equal(4, Long.fromInt(1):shiftLeft(2):toInt())
+  assert.equal(8, Long.fromInt(1):shiftLeft(3):toInt())
+  assert.equal(16, Long.fromInt(1):shiftLeft(4):toInt())
+  
+  assert.equal(-2, Long.fromInt(-1):shiftLeft(1):toInt())
+  assert.equal(-4, Long.fromInt(-1):shiftLeft(2):toInt())
+  assert.equal(-8, Long.fromInt(-1):shiftLeft(3):toInt())
+  assert.equal(-16, Long.fromInt(-1):shiftLeft(4):toInt())
+  
+  assert.equal(6, Long.fromInt(3):shiftLeft(1):toInt())
+  assert.equal(12, Long.fromInt(3):shiftLeft(2):toInt())
+  assert.equal(24, Long.fromInt(3):shiftLeft(3):toInt())
+  assert.equal(48, Long.fromInt(3):shiftLeft(4):toInt())
+  
+  assert.equal(-2, Long.fromInt(0xffffffff):shiftLeft(1).low)
+  assert.equal(-1, Long.fromInt(0xffffffff):shiftLeft(1).high)
+  
+end)
+
+it('shiftRight', function()
+  assert.equal(0, Long.fromInt(0):shiftRight(1):toInt())
+  assert.equal(0, Long.fromInt(1):shiftRight(1):toInt())
+  assert.equal(1, Long.fromInt(2):shiftRight(1):toInt())
+  assert.equal(1, Long.fromInt(3):shiftRight(1):toInt())
+  assert.equal(2, Long.fromInt(4):shiftRight(1):toInt())
+  assert.equal(2, Long.fromInt(5):shiftRight(1):toInt())
+  assert.equal(3, Long.fromInt(6):shiftRight(1):toInt())
+  assert.equal(3, Long.fromInt(7):shiftRight(1):toInt())
+  
+  assert.equal(-1, Long.fromInt(-1):shiftRight(1):toInt())
+  assert.equal(-1, Long.fromInt(-2):shiftRight(1):toInt())
+  assert.equal(-2, Long.fromInt(-3):shiftRight(1):toInt())
+  assert.equal(-2, Long.fromInt(-4):shiftRight(1):toInt())
+end)
+
 it('toInt', function()
   assert.equal(0, Long.ZERO:toInt())
   assert.equal(1, Long.ONE:toInt())
