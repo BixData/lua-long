@@ -16,41 +16,6 @@
 
 local Long = require 'long'
 
-it('consts', function()
-  assert.equal(false, Long.ZERO.unsigned)
-  assert.equal(0, Long.ZERO.low)
-  assert.equal(0, Long.ZERO.high)
-  
-  assert.equal(true, Long.UZERO.unsigned)
-  assert.equal(0, Long.UZERO.low)
-  assert.equal(0, Long.UZERO.high)
-  
-  assert.equal(false, Long.ONE.unsigned)
-  assert.equal(1, Long.ONE.low)
-  assert.equal(0, Long.ONE.high)
-  
-  assert.equal(true, Long.UONE.unsigned)
-  assert.equal(1, Long.UONE.low)
-  assert.equal(0, Long.UONE.high)
-  
-  assert.equal(false, Long.NEG_ONE.unsigned)
-  assert.equal(-1, Long.NEG_ONE.low)
-  assert.equal(-1, Long.NEG_ONE.high)
-  
-  assert.equal(false, Long.MAX_VALUE.unsigned)
-  assert.equal(-1, Long.MAX_VALUE.low)
-  assert.equal(2147483647, Long.MAX_VALUE.high)
-  
-  assert.equal(true, Long.MAX_UNSIGNED_VALUE.unsigned)
-  assert.equal(-1, Long.MAX_UNSIGNED_VALUE.low)
-  assert.equal(-1, Long.MAX_UNSIGNED_VALUE.high)
-  
-  assert.equal(false, Long.MIN_VALUE.unsigned)
-  assert.equal(0, Long.MIN_VALUE.low)
-  assert.equal(-2147483648, Long.MIN_VALUE.high)
-  
-end)
-
 it('basic', function()
   local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
   assert.equal(9223372036854775807, longVal:toNumber())
@@ -139,4 +104,19 @@ describe('unsigned', function()
     --assert.equal("0", longVal:toString())
   end)
 
+  it('zero_sub_signed', function()
+    local longVal = Long.fromInt(0, true):add(Long.fromInt(-1, false))
+    assert.equal(-1, longVal.low)
+    assert.equal(-1, longVal.high)
+    assert.equal(true, longVal.unsigned)
+    assert.equal(18446744073709551615, longVal:toNumber())
+    --assert.equal("18446744073709551615", longVal:toString())
+  end)
+
+--  it('max_unsigned_div_max_signed', function()
+--    local longVal = Long.MAX_UNSIGNED_VALUE:div(Long.MAX_VALUE)
+--    assert.equal(2, longVal:toNumber())
+----    assert.equal("2", longVal:toString())
+--  end)
+  
 end)

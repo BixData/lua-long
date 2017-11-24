@@ -98,17 +98,15 @@ end
  * @inner
 --]]
 function Long.fromValue(val)
-  if val and val.isInstanceOf and val:isInstanceOf(Long) then
-    return val
-  end
-  if type(val) == 'number' then
+  if type(val) == 'table' then
+    if val.isInstanceOf and val:isInstanceOf(Long) then return val end
+    return Long.fromBits(val.low, val.high, val.unsigned)
+  elseif type(val) == 'number' then
     return Long.fromNumber(val)
-  end
-  if type(val) == 'string' then
+  elseif type(val) == 'string' then
     return Long.fromString(val)
   end
-  -- Throws for non-objects, converts non-instanceof Long:
-  return Long.fromBits(val.low, val.high, val.unsigned)
+  error('unsupported type')
 end
 
 --[[
@@ -286,6 +284,40 @@ function Long:bnot()
 end
 
 --[[
+ * Compares this Long's value with the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {number} 0 if they are the same, 1 if the this is greater and -1
+ *  if the given one is greater
+--]]
+function Long:compare(other)
+  if not Long.isLong(other) then other = Long.fromValue(other) end
+  if self:eq(other) then return 0 end
+  local selfNeg, otherNeg = self:isNegative(), other:isNegative()
+  if selfNeg and not otherNeg then return -1 end
+  if not selfNeg and otherNeg then return 1 end
+  -- At this point the sign bits are the same
+  if not self.unsigned then
+    if self:sub(other):isNegative() then return -1 else return 1 end
+  end
+  -- Both are positive if at least one is unsigned
+  --return (other.high >>> 0) > (self.high >>> 0) || (other.high === self.high && (other.low >>> 0) > (self.low >>> 0)) ? -1 : 1
+  if bit32.rshift(other.high, 0) > bit32.rshift(self.high, 0) or (other.high == self.high and bit32.rshift(other.low, 0) > bit32.rshift(self.low, 0)) then
+    return -1
+  else
+    return 1
+  end
+end
+
+--[[
+ * Compares this Long's value with the specified's. This is an alias of {@link Long#compare}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {number} 0 if they are the same, 1 if the this is greater and -1
+ *  if the given one is greater
+--]]
+Long.comp = Long.compare
+
+--[[
  * Tests if this Long's value equals the specified's.
  * @param {!Long|number|string} other Other value
  * @returns {boolean}
@@ -309,14 +341,81 @@ end
 Long.eq = Long.equals
 
 --[[
+ * Tests if this Long's value is greater than the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+function Long:greaterThan(other)
+  return self:comp(other) > 0
+end
+
+--[[
+ * Tests if this Long's value is greater than the specified's. This is an alias of {@link Long#greaterThan}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+Long.gt = Long.greaterThan
+
+--[[
+ * Tests if this Long's value is greater than or equal the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+function Long:greaterThanOrEqual(other)
+  return self:comp(other) >= 0
+end
+
+--[[
+ * Tests if this Long's value is greater than or equal the specified's. This is an alias of {@link Long#greaterThanOrEqual}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+Long.gte = Long.greaterThanOrEqual
+
+--[[
  * Tests if the specified object is a Long.
  * @function
  * @param {*} obj Object
  * @returns {boolean}
 --]]
 function Long:isLong()
-  return self and self.isInstanceOf and self:isInstanceOf(Long)
+  return type(self) == 'table' and self.isInstanceOf and self:isInstanceOf(Long)
 end
+
+--[[
+ * Tests if this Long's value is negative.
+ * @returns {boolean}
+--]]
+function Long:isNegative()
+  return not self.unsigned and self.high < 0
+end
+
+--[[
+ * Tests if this Long's value equals zero.
+ * @returns {boolean}
+--]]
+function Long:isZero()
+  return self.high == 0 and self.low == 0
+end
+
+--[[
+ * Tests if this Long's value is less than the specified's.
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+function Long:lessThan(other)
+  return self:comp(other) < 0
+end
+
+--[[
+ * Tests if this Long's value is less than the specified's. This is an alias of {@link Long#lessThan}.
+ * @function
+ * @param {!Long|number|string} other Other value
+ * @returns {boolean}
+--]]
+Long.lt = Long.lessThan
 
 --[[
  * Negates this Long's value.
@@ -348,6 +447,14 @@ function Long:subtract(subtrahend)
   end
   return self:add(subtrahend:neg())
 end
+
+--[[
+ * Returns the difference of this and the specified Long. This is an alias of {@link Long#subtract}.
+ * @function
+ * @param {!Long|number|string} subtrahend Subtrahend
+ * @returns {!Long} Difference
+--]]
+Long.sub = Long.subtract
 
 --[[
  * Converts this Long to its byte representation.
