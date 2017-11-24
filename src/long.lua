@@ -65,7 +65,6 @@ function Long.fromInt(value, unsigned)
 --          if (cachedObj)
 --              return cachedObj
 --      }
---      obj = fromBits(value, (value | 0) < 0 ? -1 : 0, true)
     if bit32s.bor(value, 0) < 0 then
       obj = Long.fromBits(value, -1, true)
     else
@@ -75,14 +74,12 @@ function Long.fromInt(value, unsigned)
 --          UINT_CACHE[value] = obj
     return obj
   else
---    value |= 0
     value = bit32s.bor(value, 0)
 --    if (cache = (-128 <= value && value < 128)) {
 --        cachedObj = INT_CACHE[value]
 --        if (cachedObj)
 --            return cachedObj
 --    }
---    obj = fromBits(value, value < 0 ? -1 : 0, false)
     if value < 0 then
       obj = Long.fromBits(value, -1, false)
     else
@@ -277,7 +274,6 @@ function Long:add(addend)
   c32 = bit32.band(c32, 0xFFFF)
   c48 = c48 + a48 + b48
   c48 = bit32.band(c48, 0xFFFF)
-  --return Long.fromBits((c16 << 16) | c00, (c48 << 16) | c32, self.unsigned)
   return Long.fromBits(bit32.bor(bit32.lshift(c16,16), c00), bit32.bor(bit32.lshift(c48, 16), c32), self.unsigned)
 end
 
@@ -286,7 +282,6 @@ end
  * @returns {!Long}
 --]]
 function Long:bnot()
-  --return Long.fromBits(~self.low, ~self.high, self.unsigned)
   return Long.fromBits(bit32.bnot(self.low), bit32.bnot(self.high), self.unsigned)
 end
 
@@ -299,7 +294,6 @@ function Long:equals(other)
   if not Long.isLong(other) then
     other = Long.fromValue(other)
   end
-  -- t(self.high >>> 31) == 1 and (other.high >>> 31) == 1
   if self.unsigned ~= other.unsigned and bit32.rshift(self.high, 31) == 1 and bit32.rshift(other.high, 31) == 1 then
     return false
   end
@@ -394,10 +388,8 @@ end
 --]]
 function Long:toNumber()
   if self.unsigned then
-    --return ((self.high >>> 0) * TWO_PWR_32_DBL) + (self.low >>> 0)
     return (bit32.rshift(self.high, 0) * TWO_PWR_32_DBL) + bit32.rshift(self.low, 0)
   end
-  --return self.high * TWO_PWR_32_DBL + (self.low >>> 0)
   return self.high * TWO_PWR_32_DBL + bit32.rshift(self.low, 0)
 end
 
