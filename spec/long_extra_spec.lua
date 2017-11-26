@@ -183,6 +183,16 @@ it('__mul', function()
   assert.equal(Long.fromInt(21), Long.fromInt(7) * Long.fromInt(3))
 end)
 
+it('negate', function()
+  assert.equal(Long.fromInt(-7), Long.fromInt(7):negate())
+  assert.equal(Long.fromInt(7), Long.fromInt(-7):negate())
+end)
+
+it('__unm', function()
+  assert.equal(Long.fromInt(-7), -Long.fromInt(7))
+  assert.equal(Long.fromInt(7), -Long.fromInt(-7))
+end)
+
 it('shiftLeft', function()
   assert.equal(0, Long.fromInt(0):shiftLeft(1):toInt())
   

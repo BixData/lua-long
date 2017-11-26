@@ -696,6 +696,7 @@ end
  * @returns {!Long} Negated Long
 --]]
 Long.neg = Long.negate
+Long.__unm = Long.negate
 
 --[[
  * Returns this Long with bits shifted to the left by the given amount.
