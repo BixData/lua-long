@@ -286,6 +286,7 @@ function Long:add(addend)
   c48 = bit32.band(c48, 0xFFFF)
   return Long.fromBits(bit32.bor(bit32.lshift(c16,16), c00), bit32.bor(bit32.lshift(c48, 16), c32), self.unsigned)
 end
+Long.__add = Long.add
 
 --[[
  * Returns the bitwise NOT of this Long.
