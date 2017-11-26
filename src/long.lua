@@ -595,7 +595,7 @@ end
  * @returns {!Long} Remainder
 --]]
 Long.mod = Long.modulo
-Long.__mod = Long.modulu
+Long.__mod = Long.modulo
 
 --[[
  * Returns the product of this and the specified Long.

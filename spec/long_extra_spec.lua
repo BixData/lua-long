@@ -151,7 +151,6 @@ it('__le', function()
 end)
 
 it('__mod', function()
-  pending('__mod not yet supported')
   assert.equal(Long.fromInt(2), Long.fromInt(17) % Long.fromInt(3))
 end)
 
