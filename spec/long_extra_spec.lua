@@ -46,6 +46,11 @@ it('band', function()
   assert.equal(8, Long.fromInt(10):band(12):toInt()) -- %1010 & %1100 = %1000
 end)
 
+it('bnot', function()
+  assert.equal(-1, Long.ZERO:bnot():toInt())
+  assert.equal(-3, Long.fromInt(2):bnot():toInt())
+end)
+
 it('bor', function()
   assert.equal(14, Long.fromInt(10):bor(12):toInt()) -- %1010 | %1100 = %1110
 end)
