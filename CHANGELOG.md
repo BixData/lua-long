@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Port `bor` and `bxor` bitwise functions
+- Port `band`, `bor` and `bxor` bitwise functions
 
 ## [1.0.1-0] - 2017-11-26
 ### Added:

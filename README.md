@@ -217,7 +217,7 @@ Returns the sum of this and the specified Long.
 | addend          | *!Long &#124; number &#124; string* | Addend 
 | **@returns**    | *!Long*         | Sum 
 
-#### Long:and(other)
+#### Long:band(other)
 
 Returns the bitwise AND of this Long and the specified.
 
