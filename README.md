@@ -226,6 +226,23 @@ Returns the bitwise AND of this Long and the specified.
 | other           | *!Long &#124; number &#124; string* | Other Long 
 | **@returns**    | *!Long*         | 
 
+#### Long:bnot()
+
+Returns the bitwise NOT of this Long.
+
+| Parameter       | Type            | Description
+|-----------------|-----------------|---------------
+| **@returns**    | *!Long*         | 
+
+#### Long:bxor/xor(other)
+
+Returns the bitwise XOR of this Long and the given one.
+
+| Parameter       | Type            | Description
+|-----------------|-----------------|---------------
+| other           | *!Long &#124; number &#124; string* | Other Long 
+| **@returns**    | *!Long*         | 
+
 #### Long:compare/comp(other)
 
 Compares this Long's value with the specified's.
@@ -395,14 +412,6 @@ Negates this Long's value.
 |-----------------|-----------------|---------------
 | **@returns**    | *!Long*         | Negated Long 
 
-#### Long:not()
-
-Returns the bitwise NOT of this Long.
-
-| Parameter       | Type            | Description
-|-----------------|-----------------|---------------
-| **@returns**    | *!Long*         | 
-
 #### Long:notEquals/neq(other)
 
 Tests if this Long's value differs from the specified's.
@@ -412,7 +421,7 @@ Tests if this Long's value differs from the specified's.
 | other           | *!Long &#124; number &#124; string* | Other value 
 | **@returns**    | *boolean*       | 
 
-#### Long:or(other)
+#### Long:bor(other)
 
 Returns the bitwise OR of this Long and the specified.
 
@@ -498,12 +507,3 @@ Converts this Long to unsigned.
 | Parameter       | Type            | Description
 |-----------------|-----------------|---------------
 | **@returns**    | *!Long*         | Unsigned long 
-
-#### Long:bxor/xor(other)
-
-Returns the bitwise XOR of this Long and the given one.
-
-| Parameter       | Type            | Description
-|-----------------|-----------------|---------------
-| other           | *!Long &#124; number &#124; string* | Other Long 
-| **@returns**    | *!Long*         | 
