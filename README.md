@@ -217,7 +217,7 @@ Returns the sum of this and the specified Long.
 | addend          | *!Long &#124; number &#124; string* | Addend 
 | **@returns**    | *!Long*         | Sum 
 
-#### Long:and(other)
+#### Long:band(other)
 
 Returns the bitwise AND of this Long and the specified.
 
@@ -232,6 +232,15 @@ Returns the bitwise NOT of this Long.
 
 | Parameter       | Type            | Description
 |-----------------|-----------------|---------------
+| **@returns**    | *!Long*         | 
+
+#### Long:bor(other)
+
+Returns the bitwise OR of this Long and the specified.
+
+| Parameter       | Type            | Description
+|-----------------|-----------------|---------------
+| other           | *!Long &#124; number &#124; string* | Other Long 
 | **@returns**    | *!Long*         | 
 
 #### Long:bxor/xor(other)
@@ -420,15 +429,6 @@ Tests if this Long's value differs from the specified's.
 |-----------------|-----------------|---------------
 | other           | *!Long &#124; number &#124; string* | Other value 
 | **@returns**    | *boolean*       | 
-
-#### Long:bor(other)
-
-Returns the bitwise OR of this Long and the specified.
-
-| Parameter       | Type            | Description
-|-----------------|-----------------|---------------
-| other           | *!Long &#124; number &#124; string* | Other Long 
-| **@returns**    | *!Long*         | 
 
 #### Long:shiftLeft/shl(numBits)
 
