@@ -42,6 +42,10 @@ it('__add', function()
   assert.equal(Long.fromInt(7), Long.fromInt(4) + Long.fromInt(3))
 end)
 
+it('bxor', function()
+  assert.equal(6, Long.fromInt(5):bxor(3):toInt())
+end)
+
 it('divide', function()
   assert.has_error(function() Long.ONE:divide(0) end)
   assert.has_error(function() Long.ONE:divide(Long.ZERO) end)

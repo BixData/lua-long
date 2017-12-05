@@ -297,6 +297,17 @@ function Long:bnot()
 end
 
 --[[
+ * Returns the bitwise XOR of this Long and the given one.
+ * @param {!Long|number|string} other Other Long
+ * @returns {!Long}
+--]]
+function Long:bxor(other)
+  if not Long.isLong(other) then other = Long.fromValue(other) end
+  return Long.fromBits(bit32.bxor(self.low, other.low), bit32.bxor(self.high, other.high), self.unsigned)
+end
+Long.xor = Long.bxor
+
+--[[
  * Compares this Long's value with the specified's.
  * @param {!Long|number|string} other Other value
  * @returns {number} 0 if they are the same, 1 if the this is greater and -1

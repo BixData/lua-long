@@ -499,7 +499,7 @@ Converts this Long to unsigned.
 |-----------------|-----------------|---------------
 | **@returns**    | *!Long*         | Unsigned long 
 
-#### Long:xor(other)
+#### Long:bxor/xor(other)
 
 Returns the bitwise XOR of this Long and the given one.
 
