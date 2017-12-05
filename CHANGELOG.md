@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Port `bxor` function
+- Port `bor` and `bxor` bitwise functions
 
 ## [1.0.1-0] - 2017-11-26
 ### Added:

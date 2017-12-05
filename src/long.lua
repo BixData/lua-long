@@ -297,6 +297,16 @@ function Long:bnot()
 end
 
 --[[
+ * Returns the bitwise OR of this Long and the specified.
+ * @param {!Long|number|string} other Other Long
+ * @returns {!Long}
+--]]
+function Long:bor(other)
+  if not Long.isLong(other) then other = Long.fromValue(other) end
+  return Long.fromBits(bit32.bor(self.low, other.low), bit32.bor(self.high, other.high), self.unsigned)
+end
+
+--[[
  * Returns the bitwise XOR of this Long and the given one.
  * @param {!Long|number|string} other Other Long
  * @returns {!Long}

@@ -234,6 +234,15 @@ Returns the bitwise NOT of this Long.
 |-----------------|-----------------|---------------
 | **@returns**    | *!Long*         | 
 
+#### Long:bor(other)
+
+Returns the bitwise OR of this Long and the specified.
+
+| Parameter       | Type            | Description
+|-----------------|-----------------|---------------
+| other           | *!Long &#124; number &#124; string* | Other Long 
+| **@returns**    | *!Long*         | 
+
 #### Long:bxor/xor(other)
 
 Returns the bitwise XOR of this Long and the given one.
@@ -420,15 +429,6 @@ Tests if this Long's value differs from the specified's.
 |-----------------|-----------------|---------------
 | other           | *!Long &#124; number &#124; string* | Other value 
 | **@returns**    | *boolean*       | 
-
-#### Long:bor(other)
-
-Returns the bitwise OR of this Long and the specified.
-
-| Parameter       | Type            | Description
-|-----------------|-----------------|---------------
-| other           | *!Long &#124; number &#124; string* | Other Long 
-| **@returns**    | *!Long*         | 
 
 #### Long:shiftLeft/shl(numBits)
 

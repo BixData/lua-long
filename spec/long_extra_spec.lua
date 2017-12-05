@@ -42,6 +42,10 @@ it('__add', function()
   assert.equal(Long.fromInt(7), Long.fromInt(4) + Long.fromInt(3))
 end)
 
+it('bor', function()
+  assert.equal(14, Long.fromInt(10):bor(12):toInt()) -- %1010 | %1100 = %1110
+end)
+
 it('bxor', function()
   assert.equal(6, Long.fromInt(5):bxor(3):toInt())
 end)
