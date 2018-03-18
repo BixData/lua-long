@@ -41,21 +41,6 @@ print(longVal:toString())
 ...
 ```
 
-Testing with a Specific Lua Version
------------------------------------
-
-Various Dockerfiles are made available in the root directory to provide a specific Lua VM for the test suite:
-
-* `Test-Lua5.1.Dockerfile`
-* `Test-Lua5.2.Dockerfile`
-
-```sh
-$ docker build -f Test-Lua5.1.Dockerfile -t test .
-$ docker run -it test busted -v --defer-print
-
-41 successes / 0 failures / 0 errors / 0 pending : 2.41141 seconds
-```
-
 API
 ---
 
@@ -521,4 +506,28 @@ Converts this Long to unsigned.
 
 | Parameter       | Type            | Description
 |-----------------|-----------------|---------------
-| **@returns**    | *!Long*         | Unsigned long
+| **@returns**    | *!Long*         | Unsigned long 
+
+## Testing
+
+### Testing Locally
+
+```sh
+$ busted -v
+●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●
+39 successes / 0 failures / 0 errors / 0 pending : 0.068103 seconds
+```
+
+### Testing with a Specific Lua Version
+
+Various Dockerfiles are made available in the root directory to provide a specific Lua VM for the test suite:
+
+* `Test-Lua5.1.Dockerfile`
+* `Test-Lua5.2.Dockerfile`
+
+```sh
+$ docker build -f Test-Lua5.1.Dockerfile -t test .
+$ docker run -it test busted -v --defer-print
+
+41 successes / 0 failures / 0 errors / 0 pending : 2.41141 seconds
+```
