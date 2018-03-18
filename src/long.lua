@@ -14,6 +14,10 @@ end
 
 local Long = class('Long')
 
+function Long:__tostring()
+  return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
+end
+
 --[[
  * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
  *  See the from* functions below for more convenient ways of constructing Longs.
@@ -30,13 +34,21 @@ function Long:initialize(low, high, unsigned)
    * The low 32 bits as a signed value.
    * @type {number}
   --]]
-  self.low = bit32s.bor(low, 0)
+  if IS_LUA_53 then
+    self.low = eval(string.format('return %d | 0', math.floor(low)))
+  else
+    self.low = bit32s.bor(low, 0)
+  end
 
   --[[
    * The high 32 bits as a signed value.
    * @type {number}
   --]]
-  self.high = bit32s.bor(high, 0)
+  if IS_LUA_53 then
+    self.high = eval(string.format('return %d | 0', math.floor(high)))
+  else
+    self.high = bit32s.bor(high, 0)
+  end
 
   --[[
    * Whether unsigned or not.
@@ -223,7 +235,11 @@ Long.NEG_ONE = Long.fromInt(-1)
  * Maximum signed value.
  * @type {!Long}
 --]]
-Long.MAX_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0x7FFFFFFF, 0), false)
+if IS_LUA_53 then
+  Long.MAX_VALUE = Long.fromBits(eval('return 0xFFFFFFFFFFFFFFFF | 0'), eval('return 0x7FFFFFFFFFFFFFFF | 0'), false)
+else
+  Long.MAX_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0x7FFFFFFF, 0), false)
+end
 
 --[[
  * Maximum unsigned value.
@@ -274,10 +290,6 @@ function Long.fromNumber(value, unsigned)
   end
   if value < 0 then return Long.fromNumber(-value, unsigned):neg() end
   return Long.fromBits((value % TWO_PWR_32_DBL) or 0, (value / TWO_PWR_32_DBL) or 0, unsigned)
-end
-
-function Long:__tostring()
-  return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
 end
 
 --[[
