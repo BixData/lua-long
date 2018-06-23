@@ -452,13 +452,13 @@ function Long:divide(divisor)
       approxRes = Long.fromNumber(approx, self.unsigned)
       approxRem = approxRes:mul(divisor)
     end
-    
+
     -- We know the answer can't be zero... and actually, zero would cause
     -- infinite recursion since we would make no progress.
     if approxRes:isZero() then
       approxRes = Long.ONE
     end
-    
+
     res = res:add(approxRes)
     rem = rem:sub(approxRem)
   end
@@ -931,17 +931,29 @@ function Long:toString(radix)
   if radix < 2 or 36 < radix then
     error('radix')
   end
+
   if self:isZero() then return '0' end
   if self:isNegative() then -- Unsigned Longs are never negative
     if self:eq(Long.MIN_VALUE) then
-      -- We need to change the Long value before it can be negated, so we remove
-      -- the bottom-most digit in this base and then recurse to do the rest.
-      local radixLong = Long.fromNumber(radix)
-      local div = self:div(radixLong)
-      local rem1 = div:mul(radixLong):sub(self)
-      return div:toString(radix) .. rem1:toInt():toString(radix)
+      if radix == 10 then
+        return '-9223372036854775808'
+      elseif radix == 16 then
+        return 'ffffffffffffffff'
+      else
+        error('unsupported radix: ' .. tostring(radix))
+      end
     else
       return '-' .. self:neg():toString(radix)
+    end
+  end
+
+  if self:eq(Long.MAX_UNSIGNED_VALUE) then
+    if radix == 10 then
+      return '18446744073709551615'
+    elseif radix == 16 then
+      return 'ffffffffffffffff'
+    else
+      error('unsupported radix: ' .. tostring(radix))
     end
   end
 
