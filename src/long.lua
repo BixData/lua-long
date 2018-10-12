@@ -29,6 +29,10 @@ end
  * @constructor
 --]]
 function Long:initialize(low, high, unsigned)
+  if IS_LUA_53 then
+    low = math.floor(low)
+    high = math.floor(high)
+  end
 
   --[[
    * The low 32 bits as a signed value.
