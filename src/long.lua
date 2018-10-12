@@ -14,6 +14,10 @@ end
 
 local Long = class('Long')
 
+function Long:__tostring()
+  return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
+end
+
 --[[
  * Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
  *  See the from* functions below for more convenient ways of constructing Longs.
@@ -274,10 +278,6 @@ function Long.fromNumber(value, unsigned)
   end
   if value < 0 then return Long.fromNumber(-value, unsigned):neg() end
   return Long.fromBits((value % TWO_PWR_32_DBL) or 0, (value / TWO_PWR_32_DBL) or 0, unsigned)
-end
-
-function Long:__tostring()
-  return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
 end
 
 --[[
