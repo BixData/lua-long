@@ -2,6 +2,16 @@ local bit32 = require 'bit32'
 local bit32s = require 'long.bit32s'
 local class = require 'middleclass'
 
+local IS_LUA_53 = string.match(_VERSION, 'Lua 5.3')
+
+local function eval(expr)
+  if IS_LUA_53 then
+    return load(expr)()
+  else
+    return loadstring(expr)()
+  end
+end
+
 local Long = class('Long')
 
 --[[
@@ -113,28 +123,48 @@ end
  * @const
  * @inner
 --]]
-local TWO_PWR_16_DBL = bit32s.lshift(1, 16)
+local TWO_PWR_16_DBL
+if IS_LUA_53 then
+  TWO_PWR_16_DBL = eval('return 1 << 16')
+else
+  TWO_PWR_16_DBL = bit32s.lshift(1, 16)
+end
 
 --[[
  * @type {number}
  * @const
  * @inner
 --]]
-local TWO_PWR_24_DBL = bit32s.lshift(1, 24)
+local TWO_PWR_24_DBL
+if IS_LUA_53 then
+  TWO_PWR_24_DBL = eval('return 1 << 24')
+else
+ TWO_PWR_24_DBL = bit32s.lshift(1, 24)
+end
 
 --[[
  * @type {number}
  * @const
  * @inner
 --]]
-local TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL
+local TWO_PWR_32_DBL
+if IS_LUA_53 then
+  TWO_PWR_32_DBL = eval('return 1 << 32')
+else
+  TWO_PWR_32_DBL = TWO_PWR_16_DBL * TWO_PWR_16_DBL
+end
 
 --[[
  * @type {number}
  * @const
  * @inner
 --]]
-local TWO_PWR_64_DBL = TWO_PWR_32_DBL * TWO_PWR_32_DBL
+local TWO_PWR_64_DBL
+if IS_LUA_53 then
+  TWO_PWR_64_DBL = 1.0 * TWO_PWR_32_DBL * TWO_PWR_32_DBL
+else
+  TWO_PWR_64_DBL = TWO_PWR_32_DBL * TWO_PWR_32_DBL
+end
 
 --[[
  * @type {number}
