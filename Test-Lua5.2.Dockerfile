@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
 # Install LuaRocks modules required for testing
 RUN luarocks install busted
 RUN luarocks install bit32
-RUN luarocks install middleclass
 
 # Add this project
 ADD . /app
