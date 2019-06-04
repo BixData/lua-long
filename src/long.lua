@@ -1,6 +1,5 @@
 local bit32 = require 'bit32'
 local bit32s = require 'long.bit32s'
-local class = require 'middleclass'
 
 local IS_LUA_53 = string.match(_VERSION, 'Lua 5.3')
 
@@ -12,7 +11,7 @@ local function eval(expr)
   end
 end
 
-local Long = class('Long')
+local Long = {}
 
 function Long:__tostring()
   return 'Long {low=' .. self.low .. ', high=' .. self.high .. ', unsigned=' .. tostring(self.unsigned) .. '}'
@@ -28,11 +27,15 @@ end
  * @param {boolean=} unsigned Whether unsigned or not, defaults to `false` for signed
  * @constructor
 --]]
-function Long:initialize(low, high, unsigned)
+function Long.new(low, high, unsigned)
   if IS_LUA_53 then
     low = math.floor(low)
     high = math.floor(high)
   end
+
+  local self = {}
+  for k,v in pairs(Long) do self[k] = v end
+  setmetatable(self, Long)
 
   --[[
    * The low 32 bits as a signed value.
@@ -51,6 +54,8 @@ function Long:initialize(low, high, unsigned)
    * @type {boolean}
   --]]
   self.unsigned = not not unsigned
+  
+  return self
 end
 
 --[[
@@ -62,9 +67,7 @@ end
  * @param {boolean=} unsigned Whether unsigned or not, defaults to `false` for signed
  * @returns {!Long} The corresponding Long value
 --]]
-function Long.fromBits(lowBits, highBits, unsigned)
-  return Long:new(lowBits, highBits, unsigned)
-end
+Long.fromBits = Long.new
 
 --[[
  * Returns a Long representing the given 32 bit integer value.
@@ -116,7 +119,7 @@ end
 --]]
 function Long.fromValue(val)
   if type(val) == 'table' then
-    if val.isInstanceOf and val:isInstanceOf(Long) then return val end
+    if Long.isLong(val) then return val end
     return Long.fromBits(val.low, val.high, val.unsigned)
   elseif type(val) == 'number' then
     return Long.fromNumber(val)
@@ -182,13 +185,6 @@ end
 local TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2
 
 --[[
- * @type {!Long}
- * @const
- * @inner
---]]
-local TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
-
---[[
  * @function
  * @param {number} base
  * @param {number} exponent
@@ -196,54 +192,6 @@ local TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
  * @inner
 --]]
 local pow_dbl = math.pow -- Used 4 times (4*8 to 15+4)
-
---[[
- * Signed zero.
- * @type {!Long}
---]]
-Long.ZERO = Long.fromInt(0)
-
---[[
- * Unsigned zero.
- * @type {!Long}
---]]
-Long.UZERO = Long.fromInt(0, true)
-
---[[
- * Signed one.
- * @type {!Long}
---]]
-Long.ONE = Long.fromInt(1)
-
---[[
- * Unsigned one.
- * @type {!Long}
---]]
-Long.UONE = Long.fromInt(1, true)
-
---[[
- * Signed negative one.
- * @type {!Long}
---]]
-Long.NEG_ONE = Long.fromInt(-1)
-
---[[
- * Maximum signed value.
- * @type {!Long}
---]]
-Long.MAX_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0x7FFFFFFF, 0), false)
-
---[[
- * Maximum unsigned value.
- * @type {!Long}
---]]
-Long.MAX_UNSIGNED_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0xFFFFFFFF, 0), true)
-
---[[
- * Minimum signed value.
- * @type {!Long}
---]]
-Long.MIN_VALUE = Long.fromBits(0, bit32s.bor(0x80000000, 0), false)
 
 -- The internal representation of a long is the two given signed, 32-bit values.
 -- We use 32-bit pieces because these are the size of integers on which
@@ -318,7 +266,9 @@ function Long:add(addend)
   c32 = bit32.band(c32, 0xFFFF)
   c48 = c48 + a48 + b48
   c48 = bit32.band(c48, 0xFFFF)
-  return Long.fromBits(bit32.bor(bit32.lshift(c16,16), c00), bit32.bor(bit32.lshift(c48, 16), c32), self.unsigned)
+  local low = bit32.bor(bit32.lshift(c16,16), c00)
+  local high = bit32.bor(bit32.lshift(c48, 16), c32)
+  return Long.fromBits(low, high, self.unsigned)
 end
 Long.__add = Long.add
 
@@ -581,7 +531,7 @@ end
  * @returns {boolean}
 --]]
 function Long:isLong()
-  return type(self) == 'table' and self.isInstanceOf and self:isInstanceOf(Long)
+  return type(self) == 'table' and self.low ~= nil and self.high ~= nil and self.unsigned ~= nil
 end
 
 --[[
@@ -692,7 +642,7 @@ function Long:multiply(multiplier)
   end
 
   -- If both longs are small, use float multiplication
-  if self:lt(TWO_PWR_24) and multiplier:lt(TWO_PWR_24) then
+  if self:lt(Long.TWO_PWR_24) and multiplier:lt(Long.TWO_PWR_24) then
     return Long.fromNumber(self:toNumber() * multiplier:toNumber(), self.unsigned)
   end
 
@@ -1028,5 +978,60 @@ function Long:toUnsigned()
   if self.unsigned then return self end
   return Long.fromBits(self.low, self.high, true)
 end
+
+--[[
+ * @type {!Long}
+ * @const
+ * @inner
+--]]
+Long.TWO_PWR_24 = Long.fromInt(TWO_PWR_24_DBL)
+
+--[[
+ * Signed zero.
+ * @type {!Long}
+--]]
+Long.ZERO = Long.fromInt(0)
+
+--[[
+ * Unsigned zero.
+ * @type {!Long}
+--]]
+Long.UZERO = Long.fromInt(0, true)
+
+--[[
+ * Signed one.
+ * @type {!Long}
+--]]
+Long.ONE = Long.fromInt(1)
+
+--[[
+ * Unsigned one.
+ * @type {!Long}
+--]]
+Long.UONE = Long.fromInt(1, true)
+
+--[[
+ * Signed negative one.
+ * @type {!Long}
+--]]
+Long.NEG_ONE = Long.fromInt(-1)
+
+--[[
+ * Maximum signed value.
+ * @type {!Long}
+--]]
+Long.MAX_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0x7FFFFFFF, 0), false)
+
+--[[
+ * Maximum unsigned value.
+ * @type {!Long}
+--]]
+Long.MAX_UNSIGNED_VALUE = Long.fromBits(bit32s.bor(0xFFFFFFFF, 0), bit32s.bor(0xFFFFFFFF, 0), true)
+
+--[[
+ * Minimum signed value.
+ * @type {!Long}
+--]]
+Long.MIN_VALUE = Long.fromBits(0, bit32s.bor(0x80000000, 0), false)
 
 return Long

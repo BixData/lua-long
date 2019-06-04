@@ -36,7 +36,7 @@ Usage
 ```lua
 local Long = require('long')
 
-local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
+local longVal = Long.new(0xFFFFFFFF, 0x7FFFFFFF)
 print(longVal:toString())
 ...
 ```
@@ -44,7 +44,7 @@ print(longVal:toString())
 API
 ---
 
-#### Long:new(low, high=, unsigned=)
+#### Long.new(low, high=, unsigned=)
 
 Constructs a 64 bit two's-complement integer, given its low and high 32 bit values as *signed* integers.
 See the from* functions below for more convenient ways of constructing Longs.

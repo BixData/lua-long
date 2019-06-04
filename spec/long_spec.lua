@@ -17,7 +17,7 @@
 local Long = require 'long'
 
 it('basic', function()
-  local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
+  local longVal = Long.new(0xFFFFFFFF, 0x7FFFFFFF)
   assert.equal(9223372036854775807, longVal:toNumber())
   assert.equal("9223372036854775807", longVal:toString())
   local longVal2 = Long.fromValue(longVal)
@@ -27,7 +27,7 @@ it('basic', function()
 end)
 
 it('isLong', function()
-  local longVal = Long:new(0xFFFFFFFF, 0x7FFFFFFF)
+  local longVal = Long.new(0xFFFFFFFF, 0x7FFFFFFF)
   assert.equal(Long.isLong(longVal), true)
 end)
 
@@ -65,7 +65,7 @@ describe('unsigned', function()
   end)
 
   it('construct_highlow', function()
-    local longVal = Long:new(0xFFFFFFFF, 0xFFFFFFFF, true)
+    local longVal = Long.new(0xFFFFFFFF, 0xFFFFFFFF, true)
     assert.equal(-1, longVal.low)
     assert.equal(-1, longVal.high)
     assert.equal(true, longVal.unsigned)
