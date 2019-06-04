@@ -1,3 +1,7 @@
+## [1.0.3-1] - 2019-06-04
+### Fixed:
+- [#30](https://github.com/BixData/lua-long/issues/30) gzip extraction error when installing with luarocks
+
 ## [1.0.3-0] - 2017-12-05
 ### Added:
 - Port `band`, `bor` and `bxor` bitwise functions

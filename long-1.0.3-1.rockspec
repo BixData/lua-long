@@ -1,8 +1,8 @@
 package = "long"
-version = "1.0.1-0"
+version = "1.0.3-1"
 source = {
-  url = "https://github.com/BixData/lua-long/archive/1.0.1-0.tar.gz",
-  dir = "lua-long-1.0.1-0"
+  url = "https://github.com/BixData/lua-long/archive/1.0.3-1.tar.gz",
+  dir = "lua-long-1.0.3-1"
 }
 description = {
   summary = "A pure Lua class representing a 64 bit two's-complement integer value",
