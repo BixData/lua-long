@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.0.0] - 2019-06-04
 ### Changed:
 - [#33](https://github.com/BixData/lua-long/issues/33) Remove middleclass dependency
 
