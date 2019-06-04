@@ -9,7 +9,6 @@ RUN make bootstrap
 
 # Install LuaRocks modules required for testing
 RUN luarocks install busted
-RUN luarocks install middleclass
 
 # Add this project
 ADD . /app

@@ -18,7 +18,6 @@ install:
   - if [[ "$LUA" == "luajit=2.1" ]]; then luarocks install bit32; fi
   - luarocks install busted
   - luarocks install luacheck
-  - luarocks install middleclass
 
 script:
   - luacheck --std max+busted --codes src spec --no-self --ignore 213 311 611 631
