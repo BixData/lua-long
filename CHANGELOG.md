@@ -1,3 +1,7 @@
+## [Unreleased]
+### Changed:
+- [#33](https://github.com/BixData/lua-long/issues/33) Remove middleclass dependency
+
 ## [1.0.3-1] - 2019-06-04
 ### Fixed:
 - [#30](https://github.com/BixData/lua-long/issues/30) gzip extraction error when installing with luarocks
