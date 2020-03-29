@@ -1,7 +1,7 @@
 package = "long"
 version = "2.0.0-0"
 source = {
-  url = "https://github.com/BixData/lua-long/archive/2.0.0-0.tar.gz",
+  url = "https://github.com/nubix-io/lua-long/archive/2.0.0-0.tar.gz",
   dir = "lua-long-2.0.0-0"
 }
 description = {
@@ -9,8 +9,8 @@ description = {
   detailed = [[
     A pure Lua port of long.js, for representing a 64 bit two's-complement integer value
   ]],
-  homepage = "https://github.com/BixData/lua-long",
-  maintainer = "David Rauschenbach",
+  homepage = "https://github.com/nubix-io/lua-long",
+  maintainer = "Nubix Inc.",
   license = "Apache 2.0"
 }
 dependencies = {
